@@ -2,13 +2,14 @@ import { makeStateKey, StateKey, TransferState } from '@angular/platform-browser
 
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
+import { TRANSLATES_CONFIG } from '../../../app-localize-settings';
 
 const fs = require('fs');
 
 export class TranslatesServerLoaderService implements TranslateLoader {
   constructor(
-    private prefix: string = 'i18n',
-    private suffix: string = '.json',
+    private prefix: string = TRANSLATES_CONFIG.prefix,
+    private suffix: string = TRANSLATES_CONFIG.fileType,
     private transferState: TransferState,
   ) {}
 

@@ -23,13 +23,15 @@
     "original-url": "Оригинальный URL:"
   },
   "not-found": {
-    "title": "Не найдено"
+    "title": "Не найдено",
+    "text": "Страница не найдена"
   },
   "ROUTES": {
     "home": "glavnaya",
     "mock": "mock",
     "back": "nazad",
     "static": "static",
-    "async": "async"
+    "async": "async",
+    "not-found": "not-found"
   }
 }

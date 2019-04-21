@@ -10,12 +10,13 @@ import {
 } from '@shared/translates/translates.service';
 
 import { TranslatesBrowserLoaderService } from './translates-browser-loader.service';
+import { TRANSLATES_CONFIG } from '../../../app-localize-settings';
 
 export function translateStaticLoader(
   http: HttpClient,
   transferState: TransferState,
 ): TranslatesBrowserLoaderService {
-  return new TranslatesBrowserLoaderService('/assets/i18n/', '.json', transferState, http);
+  return new TranslatesBrowserLoaderService(TRANSLATES_CONFIG.csrPath, TRANSLATES_CONFIG.fileType, transferState, http);
 }
 
 @NgModule({
@@ -34,4 +35,4 @@ export function translateStaticLoader(
   ],
   providers: [TranslatesService],
 })
-export class TranslatesBrowserModule {}
+export class TranslatesBrowserModule { }

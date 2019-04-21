@@ -9,14 +9,19 @@ import {
 } from '@shared/translates/translates.service';
 
 import { TranslatesServerLoaderService } from './translates-server-loader.service';
+import { TRANSLATES_CONFIG } from '../../../app-localize-settings';
 
 export function translateFactory(transferState: TransferState): TranslatesServerLoaderService {
-  return new TranslatesServerLoaderService('./dist/assets/i18n', '.json', transferState);
+  return new TranslatesServerLoaderService(TRANSLATES_CONFIG.ssrPath, TRANSLATES_CONFIG.fileType, transferState);
 }
 
 @NgModule({
   imports: [
     TranslateModule.forRoot({
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: CommonMissingTranslationHandler,
+      },
       loader: {
         provide: TranslateLoader,
         useFactory: translateFactory,

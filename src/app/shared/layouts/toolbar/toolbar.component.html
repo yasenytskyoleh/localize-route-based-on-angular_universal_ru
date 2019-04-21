@@ -1,10 +1,8 @@
 <span class="toolbar__logo">Angular RU Universal Starter</span>
-
-<button type="button" (click)="changeLanguage('en')">translate to EN</button>
-<button type="button" (click)="changeLanguage('ru')">translate to ru</button>
-<a href="https://github.com/Angular-RU/angular-universal-starter"
-   class="toolbar__github">
-    <img alt="angular" class="docs-angular-logo"
-         src="/assets/img/github-circle-white-transparent.svg">
+<a [class.active]="lang.code  === currentLang" *ngFor="let lang of langList" (click)="changeLanguage(lang.code)">
+    &nbsp;{{lang.code}}&nbsp;
+</a>
+<a href="https://github.com/Angular-RU/angular-universal-starter" class="toolbar__github">
+    <img alt="angular" class="docs-angular-logo" src="/assets/img/github-circle-white-transparent.svg">
     GitHub
 </a>

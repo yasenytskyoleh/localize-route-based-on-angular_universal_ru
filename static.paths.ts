@@ -1,1 +1,1 @@
-export const ROUTES = ['en/static/back'];
+export const ROUTES = ['en'];

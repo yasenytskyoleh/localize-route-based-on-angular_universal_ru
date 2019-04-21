@@ -11,7 +11,8 @@ import { Subject } from 'rxjs';
 import { pairwise, filter, tap } from 'rxjs/operators';
 import { LocalizeParser } from './localize-router.parser';
 import { LocalizeRouterSettings } from './localize-router.config';
-import { LocalizeLanguageService } from './localize-language';
+import { TranslatesService } from '../translates';
+import { LANG_LIST } from '../../app-localize-settings';
 
 /**
  * Localization service
@@ -30,7 +31,7 @@ export class LocalizeRouterService {
     @Inject(LocalizeParser) public parser: LocalizeParser,
     @Inject(LocalizeRouterSettings) public settings: LocalizeRouterSettings,
     @Inject(Router) private router: Router,
-    @Inject(LocalizeLanguageService) private localizeLanguage: LocalizeLanguageService
+    @Inject(TranslatesService) private translates: TranslatesService,
   ) {
     this.routerEvents = new Subject<string>();
   }
@@ -40,8 +41,12 @@ export class LocalizeRouterService {
    */
   init(): void {
     this.router.resetConfig(this.parser.routes);
-    this.localizeLanguage.initLanguage();
+    const locationLang = this.parser.getLocationLang();
+
     // subscribe to router events
+    if(locationLang && !LANG_LIST.some(x => x.code === locationLang)){
+      this.router.navigate(['/', this.parser.currentLang || this.parser.defaultLang, 'not-found']);
+    }
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationStart),
@@ -56,7 +61,7 @@ export class LocalizeRouterService {
    */
   changeLanguage(lang: string): void {
     if (lang !== this.parser.currentLang) {
-      this.localizeLanguage.changeLang(lang)
+      this.translates.changeLang(lang)
       const rootSnapshot: ActivatedRouteSnapshot = this.router.routerState.snapshot.root;
       
       this.parser.translateRoutes(lang)

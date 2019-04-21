@@ -31,6 +31,7 @@
     "mock": "mock",
     "back": "back",
     "static": "static",
-    "async": "async"
+    "async": "async",
+    "not-found": "not-found"
   }
 }

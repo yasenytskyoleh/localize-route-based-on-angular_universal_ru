@@ -11,48 +11,18 @@ import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { InlineStyleComponent } from './inline-style/inline-style.component';
 import { InlineStyleModule } from './inline-style/inline-style.module';
-import { CookieService, CookieBackendService, CookieModule } from '@gorniv/ngx-universal';
-import { RouterModule } from '@angular/router';
-import { routes } from './app.routing';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
-import { LocalizeRouterModule } from './shared/localize-router/localize-router.module';
-import { LocalizeParser, ManualParserLoader } from './shared/localize-router/localize-router.parser';
-import { LocalizeRouterSettings } from './shared/localize-router/localize-router.config';
-import { Location } from '@angular/common';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './dist/assets/i18n/', '.json');
-}
+import { CookieService, CookieBackendService } from '@gorniv/ngx-universal';
 
 @NgModule({
   imports: [
     // AppModule - FIRST!!!
     AppModule,
     ServerModule,
-
     NoopAnimationsModule,
     ServerTransferStateModule,
     InlineStyleModule,
     ModuleMapLoaderModule,
-    // TranslatesServerModule,
- 
-    // TranslateModule.forRoot({
-    //   loader: {
-    //     provide: TranslateLoader,
-    //     useFactory: HttpLoaderFactory,
-    //     deps: [HttpClient]
-    //   }
-    // }),
-    // LocalizeRouterModule.forRoot(routes, {
-    //   parser: {
-    //     provide: LocalizeParser,
-    //     useFactory: (translate, location: Location, settingsLocalize: LocalizeRouterSettings) =>
-    //       new ManualParserLoader(translate, location, settingsLocalize, ['en', 'ru'], 'ROUTES.'),
-    //     deps: [TranslateService, Location, LocalizeRouterSettings, HttpClient]
-    //   }
-    // }),
+    TranslatesServerModule,
   ],
   bootstrap: [AppComponent, InlineStyleComponent],
   providers: [

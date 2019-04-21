@@ -3,14 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Routes } from '@angular/router';
 import { Location } from '@angular/common';
 import { LocalizeParser } from './localize-router.parser';
+import { TranslatesService, ILang } from '../translates';
 import { LocalizeRouterSettings } from './localize-router.config';
-import { LocalizeLanguageService } from './localize-language';
 
 /**
  * Config interface
  */
 export interface ILocalizeRouterParserConfig {
-  locales: Array<string>;
+  locales: Array<ILang>;
   prefix?: string;
 }
 
@@ -23,8 +23,8 @@ export class LocalizeRouterHttpLoader extends LocalizeParser {
    * @param http
    * @param path
    */
-  constructor(translate: TranslateService, localizeLanguage: LocalizeLanguageService, location: Location, settings: LocalizeRouterSettings, private http: HttpClient, private path: string = 'assets/locales.json') {
-    super(translate, localizeLanguage, location, settings);
+  constructor(translate: TranslateService, translates: TranslatesService, location: Location, settings: LocalizeRouterSettings, private http: HttpClient, private path: string = 'assets/locales.json') {
+    super(translate, translates, location, settings);
   }
 
   /**
@@ -37,7 +37,6 @@ export class LocalizeRouterHttpLoader extends LocalizeParser {
       this.http.get(`${this.path}`)
         .subscribe((data: ILocalizeRouterParserConfig) => {
           this.locales = data.locales;
-          console.log(this.locales)
           this.prefix = data.prefix || '';
           this.init(routes).then(resolve);
         });

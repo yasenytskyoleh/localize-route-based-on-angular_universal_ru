@@ -11,13 +11,7 @@ import { Observable, of } from 'rxjs';
 
 import { ILang } from './translates.interface';
 import { UniversalStorage } from '@shared/storage/universal.storage';
-
-const LANG_LIST: ILang[] = [
-  { code: 'ru', name: 'Русский', culture: 'ru-RU' },
-  { code: 'en', name: 'English', culture: 'en-US' },
-];
-const LANG_DEFAULT: ILang = LANG_LIST[0];
-const STORAGE_LANG_NAME: string = 'langCode';
+import { LANG_LIST, LANG_DEFAULT, LOCALIZE_ROUTER_SETTINGS } from '../../app-localize-settings';
 
 @Injectable()
 export class TranslatesService {
@@ -45,11 +39,11 @@ export class TranslatesService {
     });
   }
 
-  private _getLanguage(): ILang {
+  public _getLanguage(): ILang {
     // fix init cookie
     this._req.cookie = this._req.headers['cookie'];
 
-    let language: ILang = this._getFindLang(this._appStorage.getItem(STORAGE_LANG_NAME));
+    let language: ILang = this._getFindLang(this._appStorage.getItem(LOCALIZE_ROUTER_SETTINGS.cacheName));
     if (language) {
       return language;
     }
@@ -70,7 +64,7 @@ export class TranslatesService {
       }
     }
     language = language || LANG_DEFAULT;
-    this._appStorage.setItem(STORAGE_LANG_NAME, language.code);
+    this._appStorage.setItem(LOCALIZE_ROUTER_SETTINGS.cacheName, language.code);
     return language;
   }
 
@@ -90,7 +84,7 @@ export class TranslatesService {
     if (!lang || lang.code === this._translate.currentLang) {
       return;
     }
-    this._appStorage.setItem(STORAGE_LANG_NAME, lang.code);
+    this._appStorage.setItem(LOCALIZE_ROUTER_SETTINGS.cacheName, lang.code);
     this._setLanguage(lang);
   }
 
@@ -107,8 +101,8 @@ export class CommonMissingTranslationHandler implements MissingTranslationHandle
   handle(params: MissingTranslationHandlerParams) {
     if (
       params.key.match(/\w+\.\w+/) &&
-      params.translateService.translations['ru'] &&
-      !params.translateService.translations['ru'][params.key]
+      params.translateService.translations[LANG_DEFAULT.code] &&
+      !params.translateService.translations[LANG_DEFAULT.code][params.key]
     ) {
       console.warn(`Нехватает перевода для "${params.key}"`);
     }
