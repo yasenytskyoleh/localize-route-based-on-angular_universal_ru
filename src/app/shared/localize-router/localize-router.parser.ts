@@ -6,9 +6,7 @@ import { LocalizeRouterSettings } from './localize-router.config';
 import { Inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ILang, TranslatesService } from '../translates';
-import { LANG_LIST, LANG_DEFAULT } from '../../app-localize-settings';
-
-const COOKIE_EXPIRY = 30; // 1 month
+import { LANG_DEFAULT } from '../../app-localize-settings';
 
 /**
  * Abstract class for parsing localization

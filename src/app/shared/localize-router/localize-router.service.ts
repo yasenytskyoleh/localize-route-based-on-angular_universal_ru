@@ -12,7 +12,6 @@ import { pairwise, filter, tap } from 'rxjs/operators';
 import { LocalizeParser } from './localize-router.parser';
 import { LocalizeRouterSettings } from './localize-router.config';
 import { TranslatesService } from '../translates';
-import { LANG_LIST, LANG_DEFAULT, LOCALIZE_ROUTER_SETTINGS } from '../../app-localize-settings';
 
 /**
  * Localization service
