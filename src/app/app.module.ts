@@ -12,7 +12,7 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
 import { TranslateService } from '@ngx-translate/core';
 // shared
 import { SharedModule } from '@shared/shared.module';
-import { TranslatesService, ILang } from '@shared/translates';
+import { TranslatesService } from '@shared/translates';
 import { UniversalStorage } from '@shared/storage/universal.storage';
 import { LocalizeRouterModule } from './shared/localize-router/localize-router.module';
 import { LocalizeParser, ManualParserLoader } from './shared/localize-router/localize-router.parser';

@@ -16,6 +16,24 @@ export const LOCALIZE_ROUTER_FORROOT_GUARD = new InjectionToken<LocalizeRouterMo
 export const RAW_ROUTES: InjectionToken<Routes[]> = new InjectionToken<Routes[]>('RAW_ROUTES');
 
 /**
+ * Cache name
+ * @type {InjectionToken<string>}
+ */
+export const CACHE_NAME = new InjectionToken<string>('CACHE_NAME');
+
+/**
+ * Boolean to indicate whether prefix should be set for single language scenarios
+ * @type {InjectionToken<boolean>}
+ */
+export const ALWAYS_SET_PREFIX = new InjectionToken<boolean>('ALWAYS_SET_PREFIX');
+
+/**
+ * Boolean to indicate translate routes segments
+ * @type {InjectionToken<boolean>}
+ */
+export const LOCALIZE_ROUTE_PROPERTY = new InjectionToken<boolean>('LOCALIZE_ROUTE_PROPERTY');
+
+/**
  * Config interface for LocalizeRouter
  */
 export interface LocalizeRouterConfig {
@@ -35,9 +53,9 @@ export class LocalizeRouterSettings implements LocalizeRouterConfig {
    * @param {boolean} localizeRouteProperty
    */
   constructor(
-    @Inject(LOCALIZE_ROUTER_SETTINGS.alwaysSetPrefix) public alwaysSetPrefix: boolean = true,
-    @Inject(LOCALIZE_ROUTER_SETTINGS.cacheName) public cacheName: string = LOCALIZE_CACHE_NAME,
-    @Inject(LOCALIZE_ROUTER_SETTINGS.localizeRouteProperty) public localizeRouteProperty: boolean = true
+    @Inject(ALWAYS_SET_PREFIX) public alwaysSetPrefix: boolean = LOCALIZE_ROUTER_SETTINGS.alwaysSetPrefix || true,
+    @Inject(CACHE_NAME) public cacheName: string = LOCALIZE_CACHE_NAME,
+    @Inject(LOCALIZE_ROUTE_PROPERTY) public localizeRouteProperty: boolean = LOCALIZE_ROUTER_SETTINGS.localizeRouteProperty || true
   ) {
   }
 }
