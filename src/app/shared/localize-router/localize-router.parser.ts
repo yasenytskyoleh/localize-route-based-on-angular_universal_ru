@@ -57,22 +57,29 @@ export abstract class LocalizeParser {
     if (!this.locales || !this.locales.length) {
       return Promise.resolve();
     }
-    // this.translates.initLanguage();
     const locationLang = this.getLocationLang();
 
     const browserLang = this.translates._getLanguage();
+    this.currentLang = locationLang || browserLang.code || this.locales[0].code;
+    this.defaultLang = LANG_DEFAULT.code;
 
-    this.defaultLang = browserLang.code || this.locales[0].code;
+    const selectedLanguage = this.currentLang || this.defaultLang;
 
-    // const selectedLanguage = this.defaultLang;
-    const selectedLanguage = locationLang || this.defaultLang;
-    this.translate.setDefaultLang(this.defaultLang);
+    this.checkRoutes(routes);
+    /** translate routes */
+    return this.translateRoutes(selectedLanguage).toPromise();
+  }
 
+  initChildRoutes(routes: Routes) {
+    this._translateRouteTree(routes);
+    return routes;
+  }
+
+  checkRoutes(routes: Routes) {
     let children: Routes = [];
     /** if set prefix is enforced */
     if (this.settings.alwaysSetPrefix) {
-      const baseRoute = { path: '', redirectTo: this.defaultLang, pathMatch: 'full' };
-
+      const baseRoute = { path: '', redirectTo: this.currentLang, pathMatch: 'full' };
       /** extract potential wildcard route */
       const wildcardIndex = routes.findIndex((route: Route) => route.path === '**');
       if (wildcardIndex !== -1) {
@@ -88,9 +95,9 @@ export abstract class LocalizeParser {
       if (children[i].data && children[i].data['skipRouteLocalization']) {
         this.routes.push(children[i]);
         children.splice(i, 1);
+
       }
     }
-
     /** append children routes */
     if (children && children.length) {
       if (this.locales.length > 1 || this.settings.alwaysSetPrefix) {
@@ -103,17 +110,10 @@ export abstract class LocalizeParser {
 
     /** ...and potential wildcard route */
     if (this._wildcardRoute && this.settings.alwaysSetPrefix) {
+
       this.routes.push(this._wildcardRoute);
     }
-    /** translate routes */
-    return this.translateRoutes(selectedLanguage).toPromise();
   }
-
-  initChildRoutes(routes: Routes) {
-    this._translateRouteTree(routes);
-    return routes;
-  }
-
   mutateRouterRootRoute(currentLanguage: string, previousLanguage: string, routes: Routes) {
     const previousTranslatedLanguage = this.settings.alwaysSetPrefix || previousLanguage !== this.defaultLang ?
       previousLanguage : '';
@@ -131,14 +131,11 @@ export abstract class LocalizeParser {
    * @returns {Promise<any>}
    */
   translateRoutes(language: string): Observable<any> {
-
     this.setRootLanguage(language);
-
     return this.translate.use(language)
       .pipe(
         map(translations => {
           this._translationObject = translations;
-          this.currentLang = language;
           if (this._languageRoute) {
             this._translateRouteTree(this._languageRoute.children);
 
@@ -147,6 +144,7 @@ export abstract class LocalizeParser {
               this._translateProperty(this._wildcardRoute, 'redirectTo', true);
             }
           } else {
+
             this._translateRouteTree(this.routes);
           }
         })
@@ -202,7 +200,6 @@ export abstract class LocalizeParser {
     if (!routeData.localizeRouter[property]) {
       routeData.localizeRouter[property] = (<any>route)[property];
     }
-
     const result = this.translateRoute(routeData.localizeRouter[property]);
     (<any>route)[property] = prefixLang ? `/${this.urlPrefix}${result}` : result;
   }
@@ -219,15 +216,20 @@ export abstract class LocalizeParser {
   translateRoute(path: string): string {
     const queryParts = path.split('?');
     if (queryParts.length > 2) {
-      throw 'There should be only one query parameter block in the URL';
+      throw new Error('There should be only one query parameter block in the URL');
     }
     const pathSegments = queryParts[0].split('/');
-
-    /** collect observables  */
-    return pathSegments
-      .map((part: string) => part.length ? this.translateText(part) : part)
-      .join('/') +
-      (queryParts.length > 1 ? `?${queryParts[1]}` : '');
+    if (this.settings.localizeRouteProperty) {
+      /** collect observables  */
+      return pathSegments
+        .map((part: string) => part.length ? this.translateText(part) : part)
+        .join('/') +
+        (queryParts.length > 1 ? `?${queryParts[1]}` : '');
+    } else {
+      return pathSegments
+        .join('/') +
+        (queryParts.length > 1 ? `?${queryParts[1]}` : '');
+    }
   }
 
   /**
@@ -248,7 +250,7 @@ export abstract class LocalizeParser {
     if (pathSlices.length && this.locales.map(x => x.code).indexOf(pathSlices[0]) !== -1) {
       return pathSlices[0];
     }
-    return null;
+    return LANG_DEFAULT.code;
   }
   /**
    * Get translated value
@@ -282,7 +284,13 @@ export class ManualParserLoader extends LocalizeParser {
    * @param locales
    * @param prefix
    */
-  constructor(translate: TranslateService, translates: TranslatesService, location: Location, settings: LocalizeRouterSettings, locales: ILang[] = [{ code: 'en', name: 'English', culture: 'en-US' },], prefix: string = 'ROUTES.') {
+  constructor(
+    translate: TranslateService,
+    translates: TranslatesService,
+    location: Location,
+    settings: LocalizeRouterSettings,
+    locales: ILang[] = [{ code: 'en', name: 'English', culture: 'en-US' }],
+    prefix: string = 'ROUTES.') {
     super(translate, translates, location, settings);
     this.locales = locales;
     this.prefix = prefix || '';

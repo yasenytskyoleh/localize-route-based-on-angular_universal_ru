@@ -21,7 +21,7 @@ import { LocalizeParser, ManualParserLoader } from './shared/localize-router/loc
 import { AppComponent } from './app.component';
 
 
-//config
+// config
 import { LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX } from './app-localize-settings';
 
 @NgModule({
@@ -36,7 +36,10 @@ import { LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX } from './a
         useFactory: (translate, translates: TranslatesService, location: Location) =>
           new ManualParserLoader(translate, translates, location, LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX),
         deps: [TranslateService, TranslatesService, Location, HttpClient]
-      }
+      },
+      alwaysSetPrefix: LOCALIZE_ROUTER_SETTINGS.alwaysSetPrefix,
+      cacheName: LOCALIZE_ROUTER_SETTINGS.cacheName,
+      localizeRouteProperty: false
     }),
     BrowserAnimationsModule,
     CookieModule.forRoot(),

@@ -9,10 +9,11 @@ import { LocalizeRouterPipe } from './localize-router.pipe';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import {
-  ALWAYS_SET_PREFIX, CACHE_NAME, LOCALIZE_ROUTER_FORROOT_GUARD, LocalizeRouterConfig, LocalizeRouterSettings,
+   LOCALIZE_ROUTER_FORROOT_GUARD, LocalizeRouterConfig, LocalizeRouterSettings,
   RAW_ROUTES,
 } from './localize-router.config';
 import { LocalizeRouterConfigLoader } from './localize-router-config-loader';
+import { LOCALIZE_ROUTER_SETTINGS } from '../../app-localize-settings';
 
 @Injectable()
 export class ParserInitializer {
@@ -77,8 +78,8 @@ export class LocalizeRouterModule {
           useFactory: provideForRootGuard,
           deps: [[LocalizeRouterModule, new Optional(), new SkipSelf()]]
         },
-        { provide: ALWAYS_SET_PREFIX, useValue: config.alwaysSetPrefix },
-        { provide: CACHE_NAME, useValue: config.cacheName },
+        { provide: LOCALIZE_ROUTER_SETTINGS.alwaysSetPrefix, useValue: config.alwaysSetPrefix },
+        { provide: LOCALIZE_ROUTER_SETTINGS.cacheName, useValue: config.cacheName },
         LocalizeRouterSettings,
         config.parser || { provide: LocalizeParser, useClass: DummyLocalizeParser },
         {

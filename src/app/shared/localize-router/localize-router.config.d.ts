@@ -62,12 +62,14 @@ export interface LocalizeRouterConfig {
     cacheName?: string;
     defaultLangFunction?: DefaultLanguageFunction;
     alwaysSetPrefix?: boolean;
+    localizeRouteProperty?: boolean;
 }
 export declare class LocalizeRouterSettings implements LocalizeRouterConfig {
     useCachedLang: boolean;
     alwaysSetPrefix: boolean;
     cacheMechanism: CacheMechanism;
     cacheName: string;
+    localizeRouteProperty: boolean;
     defaultLangFunction: DefaultLanguageFunction;
     /**
      * Settings for localize router

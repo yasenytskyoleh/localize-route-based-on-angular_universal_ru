@@ -23,7 +23,14 @@ export class LocalizeRouterHttpLoader extends LocalizeParser {
    * @param http
    * @param path
    */
-  constructor(translate: TranslateService, translates: TranslatesService, location: Location, settings: LocalizeRouterSettings, private http: HttpClient, private path: string = 'assets/locales.json') {
+  constructor(
+    translate: TranslateService,
+    translates: TranslatesService,
+    location: Location,
+    settings: LocalizeRouterSettings,
+    private http: HttpClient,
+    private path: string = 'assets/locales.json'
+  ) {
     super(translate, translates, location, settings);
   }
 

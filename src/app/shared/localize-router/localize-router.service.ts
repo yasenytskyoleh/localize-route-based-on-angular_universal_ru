@@ -12,7 +12,7 @@ import { pairwise, filter, tap } from 'rxjs/operators';
 import { LocalizeParser } from './localize-router.parser';
 import { LocalizeRouterSettings } from './localize-router.config';
 import { TranslatesService } from '../translates';
-import { LANG_LIST } from '../../app-localize-settings';
+import { LANG_LIST, LANG_DEFAULT, LOCALIZE_ROUTER_SETTINGS } from '../../app-localize-settings';
 
 /**
  * Localization service
@@ -41,12 +41,7 @@ export class LocalizeRouterService {
    */
   init(): void {
     this.router.resetConfig(this.parser.routes);
-    const locationLang = this.parser.getLocationLang();
-
     // subscribe to router events
-    if(locationLang && !LANG_LIST.some(x => x.code === locationLang)){
-      this.router.navigate(['/', this.parser.currentLang || this.parser.defaultLang, 'not-found']);
-    }
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationStart),
@@ -61,9 +56,8 @@ export class LocalizeRouterService {
    */
   changeLanguage(lang: string): void {
     if (lang !== this.parser.currentLang) {
-      this.translates.changeLang(lang)
+      this.translates.changeLang(lang);
       const rootSnapshot: ActivatedRouteSnapshot = this.router.routerState.snapshot.root;
-      
       this.parser.translateRoutes(lang)
         .pipe(
           // set new routes to router
@@ -74,12 +68,10 @@ export class LocalizeRouterService {
             .filter((path: string, i: number) => {
               return !i || path; // filter out empty paths
             });
-
           const navigationExtras: NavigationExtras = {
             ...rootSnapshot.queryParamMap.keys.length ? { queryParams: rootSnapshot.queryParams } : {},
             ...rootSnapshot.fragment ? { fragment: rootSnapshot.fragment } : {}
           };
-
           // use navigate to keep extras unchanged
           this.router.navigate(urlSegments, navigationExtras);
         });
@@ -171,7 +163,7 @@ export class LocalizeRouterService {
       return !path.indexOf('/') ? `/${this.parser.urlPrefix}${url}` : url;
     }
     // it's an array
-    let result: any[] = [];
+    const result: any[] = [];
     (path as Array<any>).forEach((segment: any, index: number) => {
       if (typeof segment === 'string') {
         const res = this.parser.translateRoute(segment);
@@ -183,8 +175,8 @@ export class LocalizeRouterService {
       } else {
         // translate router outlets block
         if (segment && segment.outlets) {
-          let outlets: any = {};
-          for (let key in segment.outlets) {
+          const outlets: any = {};
+          for (const key in segment.outlets) {
             if (segment.outlets.hasOwnProperty(key)) {
               outlets[key] = this.translateRoute(segment.outlets[key]);
             }
