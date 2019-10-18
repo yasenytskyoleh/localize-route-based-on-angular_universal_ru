@@ -11,7 +11,6 @@ import { Subject } from 'rxjs';
 import { pairwise, filter, tap } from 'rxjs/operators';
 import { LocalizeParser } from './localize-router.parser';
 import { LocalizeRouterSettings } from './localize-router.config';
-import { TranslatesService } from '../translates';
 
 /**
  * Localization service
@@ -22,15 +21,11 @@ export class LocalizeRouterService {
 
   /**
    * CTOR
-   * @param parser
-   * @param settings
-   * @param router
    */
   constructor(
     @Inject(LocalizeParser) public parser: LocalizeParser,
     @Inject(LocalizeRouterSettings) public settings: LocalizeRouterSettings,
-    @Inject(Router) private router: Router,
-    @Inject(TranslatesService) private translates: TranslatesService,
+    @Inject(Router) private router: Router
   ) {
     this.routerEvents = new Subject<string>();
   }
@@ -51,11 +46,9 @@ export class LocalizeRouterService {
 
   /**
    * Change language and navigate to translated route
-   * @param lang
    */
   changeLanguage(lang: string): void {
     if (lang !== this.parser.currentLang) {
-      this.translates.changeLang(lang);
       const rootSnapshot: ActivatedRouteSnapshot = this.router.routerState.snapshot.root;
       this.parser.translateRoutes(lang)
         .pipe(
@@ -79,9 +72,6 @@ export class LocalizeRouterService {
 
   /**
    * Traverses through the tree to assemble new translated url
-   * @param snapshot
-   * @param isRoot
-   * @returns {string}
    */
   private traverseSnapshot(
     snapshot: ActivatedRouteSnapshot,
@@ -116,7 +106,7 @@ export class LocalizeRouterService {
 
     return [
       urlPart,
-      ...Object.keys(snapshot.params).length ? [snapshot.params] : [],
+      // ...Object.keys(snapshot.params).length ? [snapshot.params] : [],
       ...outletChildren.length ? [outlets] : [],
       ...primaryChild ? this.traverseSnapshot(primaryChild) : []
     ];
@@ -124,8 +114,6 @@ export class LocalizeRouterService {
 
   /**
    * Extracts new segment value based on routeConfig and url
-   * @param snapshot
-   * @returns {string}
    */
   private parseSegmentValue(snapshot: ActivatedRouteSnapshot): string {
     if (snapshot.routeConfig) {
@@ -149,8 +137,6 @@ export class LocalizeRouterService {
   /**
    * Translate route to current language
    * If new language is explicitly provided then replace language part in url with new language
-   * @param path
-   * @returns {string | any[]}
    */
   translateRoute(path: string | any[]): string | any[] {
     // path is null (e.g. resetting auxiliary outlet)
@@ -180,7 +166,7 @@ export class LocalizeRouterService {
               outlets[key] = this.translateRoute(segment.outlets[key]);
             }
           }
-          result.push({ ...segment, outlets: outlets });
+          result.push({ ...segment, outlets });
         } else {
           result.push(segment);
         }
@@ -191,15 +177,13 @@ export class LocalizeRouterService {
 
   /**
    * Event handler to react on route change
-   * @returns {(event:any)=>void}
-   * @private
    */
   private _routeChanged(): (eventPair: [NavigationStart, NavigationStart]) => void {
     return ([previousEvent, currentEvent]: [NavigationStart, NavigationStart]) => {
       const previousLang = this.parser.getLocationLang(previousEvent.url) || this.parser.defaultLang;
       const currentLang = this.parser.getLocationLang(currentEvent.url) || this.parser.defaultLang;
-
       if (currentLang !== previousLang) {
+
         // mutate router config directly to avoid getting out of sync
         this.parser.mutateRouterRootRoute(currentLang, previousLang, this.router.config);
         this.parser.translateRoutes(currentLang)
@@ -208,6 +192,7 @@ export class LocalizeRouterService {
             tap(() => this.router.resetConfig(this.parser.routes))
           )
           .subscribe(() => {
+            console.log(this.router.config);
             // Fire route change event
             this.routerEvents.next(currentLang);
           });

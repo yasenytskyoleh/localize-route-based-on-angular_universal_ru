@@ -10,9 +10,11 @@ export const LANG_LIST: ILang[] = [
 export const LANG_DEFAULT: ILang = LANG_LIST[0];
 
 export const LOCALIZE_ROUTER_SETTINGS: LocalizeRouterSettings = {
-    alwaysSetPrefix: false,
+    alwaysSetPrefix: true,
     cacheName: 'langCode',
-    localizeRouteProperty: false
+    cacheMechanism: "LocalStorage",
+    useCachedLang: true,
+    skipLocalizeRoute: true
 };
 
 export const LOCALIZE_ROUTER_PREFIX: string = 'ROUTES.';

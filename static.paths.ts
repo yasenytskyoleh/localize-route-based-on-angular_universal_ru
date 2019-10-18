@@ -1,1 +1,1 @@
-export const ROUTES = ['en'];
+export const ROUTES = [''];

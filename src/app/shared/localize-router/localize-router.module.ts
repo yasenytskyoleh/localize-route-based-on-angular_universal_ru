@@ -1,6 +1,6 @@
 import {
   NgModule, ModuleWithProviders, APP_INITIALIZER, Optional, SkipSelf,
-  Injectable, Injector, NgModuleFactoryLoader
+  Injectable, Injector, NgModuleFactory
 } from '@angular/core';
 import { LocalizeRouterService } from './localize-router.service';
 import { DummyLocalizeParser, LocalizeParser } from './localize-router.parser';
@@ -14,9 +14,10 @@ import {
   ALWAYS_SET_PREFIX,
   CACHE_NAME,
   LOCALIZE_ROUTE_PROPERTY,
+  USE_CACHED_LANG,
+  CACHE_MECHANISM,
 } from './localize-router.config';
 import { LocalizeRouterConfigLoader } from './localize-router-config-loader';
-import { LOCALIZE_ROUTER_SETTINGS } from '../../app-localize-settings';
 
 @Injectable()
 export class ParserInitializer {
@@ -25,13 +26,11 @@ export class ParserInitializer {
 
   /**
    * CTOR
-   * @param injector
    */
   constructor(private injector: Injector) {
   }
 
   /**
-   * @returns {Promise<any>}
    */
   appInitializer(): Promise<any> {
     const res = this.parser.load(this.routes);
@@ -43,11 +42,6 @@ export class ParserInitializer {
     return res;
   }
 
-  /**
-   * @param parser
-   * @param routes
-   * @returns {()=>Promise<any>}
-   */
   generateInitializer(parser: LocalizeParser, routes: Routes[]): () => Promise<any> {
     this.parser = parser;
     this.routes = routes.reduce((a, b) => a.concat(b));
@@ -55,12 +49,6 @@ export class ParserInitializer {
   }
 }
 
-/**
- * @param p
- * @param parser
- * @param routes
- * @returns {any}
- */
 export function getAppInitializer(p: ParserInitializer, parser: LocalizeParser, routes: Routes[]): any {
   return p.generateInitializer(parser, routes).bind(p);
 }
@@ -83,7 +71,9 @@ export class LocalizeRouterModule {
         },
         { provide: ALWAYS_SET_PREFIX, useValue: config.alwaysSetPrefix },
         { provide: CACHE_NAME, useValue: config.cacheName },
-        { provide: LOCALIZE_ROUTE_PROPERTY, useValue: config.localizeRouteProperty },
+        { provide: LOCALIZE_ROUTE_PROPERTY, useValue: config.skipLocalizeRoute },
+        { provide: USE_CACHED_LANG, useValue: config.useCachedLang },
+        { provide: CACHE_MECHANISM, useValue: config.cacheMechanism },
         LocalizeRouterSettings,
         config.parser || { provide: LocalizeParser, useClass: DummyLocalizeParser },
         {
@@ -93,7 +83,7 @@ export class LocalizeRouterModule {
         },
         LocalizeRouterService,
         ParserInitializer,
-        { provide: NgModuleFactoryLoader, useClass: LocalizeRouterConfigLoader },
+        {  provide: NgModuleFactory, useClass: LocalizeRouterConfigLoader },
         {
           provide: APP_INITIALIZER,
           multi: true,
@@ -119,8 +109,6 @@ export class LocalizeRouterModule {
 }
 
 /**
- * @param localizeRouterModule
- * @returns {string}
  */
 export function provideForRootGuard(localizeRouterModule: LocalizeRouterModule): string {
   if (localizeRouterModule) {

@@ -17,11 +17,6 @@ export class LocalizeRouterConfigLoader extends SystemJsNgModuleLoader {
     super(_compiler, config);
   }
 
-  /**
-   * Extend load with custom functionality
-   * @param {string} path
-   * @returns {Promise<NgModuleFactory<any>>}
-   */
   load(path: string): Promise<NgModuleFactory<any>> {
     return super.load(path).then((factory: NgModuleFactory<any>) => {
       return {

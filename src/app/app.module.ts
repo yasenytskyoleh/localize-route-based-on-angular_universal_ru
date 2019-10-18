@@ -33,13 +33,10 @@ import { LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX } from './a
     LocalizeRouterModule.forRoot(routes, {
       parser: {
         provide: LocalizeParser,
-        useFactory: (translate, translates: TranslatesService, location: Location) =>
-          new ManualParserLoader(translate, translates, location, LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX),
-        deps: [TranslateService, TranslatesService, Location, HttpClient]
-      },
-      alwaysSetPrefix: LOCALIZE_ROUTER_SETTINGS.alwaysSetPrefix,
-      cacheName: LOCALIZE_ROUTER_SETTINGS.cacheName,
-      localizeRouteProperty: false
+        useFactory: (translate, location: Location) =>
+          new ManualParserLoader(translate, location, LOCALIZE_ROUTER_SETTINGS, LANG_LIST, LOCALIZE_ROUTER_PREFIX),
+        deps: [TranslateService, Location, HttpClient]
+      }
     }),
     BrowserAnimationsModule,
     CookieModule.forRoot(),

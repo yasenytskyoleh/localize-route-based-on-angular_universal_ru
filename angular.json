@@ -146,7 +146,7 @@
       }
     },
     "universal-demo-e2e": {
-      "root": "",
+      "root": "e2e",
       "sourceRoot": "",
       "projectType": "application",
       "architect": {
